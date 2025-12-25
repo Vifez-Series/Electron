@@ -26,6 +26,10 @@ public class AutoRespawn implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         final Player player = event.getEntity();
+        final lol.vifez.electron.profile.Profile profile = Practice.getInstance().getProfileManager().getProfile(player.getUniqueId());
+        
+        if (profile != null && profile.inMatch()) return;
+
         final Location deathLocation = player.getLocation().clone();
 
         Practice.getInstance().getServer().getScheduler().runTaskLater(Practice.getInstance(), () -> {

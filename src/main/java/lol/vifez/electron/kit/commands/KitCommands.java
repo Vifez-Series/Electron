@@ -38,6 +38,7 @@ public class KitCommands extends BaseCommand {
         sender.sendMessage(CC.translate("&f • &b/kit getInventory &f<kit> &7- &fGet the inventory of a kit"));
         sender.sendMessage(CC.translate("&f • &b/kit setIcon &f<kit> &7- &fSet the icon for a kit"));
         sender.sendMessage(CC.translate("&f • &b/kit setRanked &f<kit> &7- &fToggle whether a kit is ranked"));
+        sender.sendMessage(CC.translate("&f • &b/kit setBedFight &f<kit> &7- &fToggle whether a kit is BedFight"));
         sender.sendMessage(CC.translate("&f • &b/kit setDescription &f<kit> <description> &7- &fSet the description of a kit"));
         sender.sendMessage(CC.translate("&f • &b/kit list &7- &fList all kits"));
         sender.sendMessage(CC.translate("&f • &b/kit save &7- &fSave all kits"));
@@ -167,6 +168,22 @@ public class KitCommands extends BaseCommand {
 
         player.sendMessage(CC.translate("&7[&b" + kit.getName() + "&7] &fRanked mode " +
                 (kit.isRanked() ? "&aenabled" : "&cdisabled")));
+    }
+
+    @Subcommand("setBedFight")
+    public void setBedFight(Player player, @Name("kit") @Single String kitName) {
+        Kit kit = instance.getKitManager().getKit(kitName);
+
+        if (kit == null) {
+            player.sendMessage(CC.translate("&cKit not found!"));
+            return;
+        }
+
+        kit.setBedFight(!kit.isBedFight());
+        instance.getKitManager().save(kit);
+
+        player.sendMessage(CC.translate("&7[&b" + kit.getName() + "&7] &fBedFight mode " +
+                (kit.isBedFight() ? "&aenabled" : "&cdisabled")));
     }
 
     @Subcommand("setDescription")
