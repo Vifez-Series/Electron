@@ -6,7 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import lol.vifez.electron.arena.Arena;
 import lol.vifez.electron.arena.ArenaManager;
+import lol.vifez.electron.chunk.ChunkRestorationManager;
 import lol.vifez.electron.arena.commands.ArenaCommand;
 import lol.vifez.electron.arena.commands.ArenasCommand;
 import lol.vifez.electron.chat.MessageCommand;
@@ -78,6 +80,7 @@ public final class Practice extends JavaPlugin {
     @Getter private KitManager kitManager;
     @Getter private MatchManager matchManager;
     @Getter private QueueManager queueManager;
+    @Getter private ChunkRestorationManager chunkRestorationManager;
     @Getter private Leaderboard leaderboards;
 
     @Getter @Setter private Location spawnLocation;
@@ -85,11 +88,11 @@ public final class Practice extends JavaPlugin {
     @Override
     public void onLoad() {
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-        PacketEvents.getAPI().init();
     }
 
     @Override
     public void onEnable() {
+        PacketEvents.getAPI().init();
         instance = this;
         initializePlugin();
         new Assemble(this, new PracticeScoreboard());
@@ -162,6 +165,18 @@ public final class Practice extends JavaPlugin {
         kitManager = new KitManager();
         queueManager = new QueueManager();
         leaderboards = new Leaderboard(profileManager);
+
+        chunkRestorationManager = new ChunkRestorationManager();
+        Bukkit.getScheduler().runTask(this, () -> {
+            int count = 0;
+            for (Arena arena : arenaManager.getArenas()) {
+                if (arena.getPositionOne() != null && arena.getPositionTwo() != null) {
+                    chunkRestorationManager.getIChunkRestoration().copy(arena);
+                    count++;
+                }
+            }
+            Bukkit.getConsoleSender().sendMessage(CC.translate("&aCreated " + count + " arena snapshots!"));
+        });
     }
 
     private void registerCommands() {
@@ -209,7 +224,7 @@ public final class Practice extends JavaPlugin {
         sendMessage(" ");
         sendMessage("&b&lElectron Practice &7[V" + getDescription().getVersion() + "]");
         sendMessage("&fAuthor: &bVifez");
-        sendMessage("&fCredits: &bVifez&f, &bMTR&f, &bLugami&f, &bmqaaz");
+        sendMessage("&fCredits: &bVifez&f, &bMTR&f, &bLugami&f, &bmqaaz, &bAxto");
         sendMessage(" ");
         sendMessage("&fProtocol: &b" + getServer().getBukkitVersion());
         sendMessage("&fSpigot: &b" + getServer().getName());

@@ -93,6 +93,7 @@ public class SpawnListener implements Listener {
             Profile profile = Practice.getInstance().getProfileManager().getProfile(player.getUniqueId());
 
             if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
+                if (profile.inMatch()) return;
                 event.setCancelled(true);
                 player.teleport(Practice.getInstance().getSpawnLocation());
                 return;

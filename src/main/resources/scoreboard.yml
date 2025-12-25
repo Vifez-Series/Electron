@@ -49,6 +49,21 @@ SCOREBOARD:
       - "<footer>"
       - "&7&m-------------------"
 
+  IN-BEDFIGHT:
+    LINES:
+      - "&7&m-------------------"
+      - "&b&l ▎ &fFighting: &c<opponent>"
+      - "&b&l ▎ &fDuration: &a<duration>"
+      - " "
+      - "&b&l ▎ &fYour Bed: <your-bed>"
+      - "&b&l ▎ &fTheir Bed: <their-bed>"
+      - " "
+      - "&b&l ▎ &fYour Ping: &a<ping>ms"
+      - "&b&l ▎ &fTheir Ping: &c<opponent-ping>ms"
+      - " "
+      - "<footer>"
+      - "&7&m-------------------"
+
   MATCH-STARTING:
     LINES:
       - "&7&m-------------------"

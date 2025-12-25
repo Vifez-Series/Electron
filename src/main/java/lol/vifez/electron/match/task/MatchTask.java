@@ -53,11 +53,16 @@ public class MatchTask extends BukkitRunnable {
                     if (countdown > 0) {
                         Arrays.stream(players).forEach(p -> {
                             p.getPlayer().sendMessage(CC.colorize("&7Match Starting In &b" + countdown + "s"));
+                            p.getPlayer().sendTitle(CC.translate("&b&l" + countdown), CC.translate("&7Starting match..."));
                             p.getPlayer().playSound(p.getPlayer().getLocation(), Sound.NOTE_PIANO, 0.5f, 0.5f);
                         });
                         countdown--;
                     } else {
-                        Arrays.stream(players).forEach(p -> match.allowMovement(p.getPlayer()));
+                        Arrays.stream(players).forEach(p -> {
+                            match.allowMovement(p.getPlayer());
+                            p.getPlayer().sendTitle(CC.translate("&b&lGO!"), CC.translate("&7The match has started!"));
+                            p.getPlayer().playSound(p.getPlayer().getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+                        });
                         match.setMatchState(MatchState.STARTED);
                         Bukkit.getPluginManager().callEvent(new MatchStartEvent(match.getPlayerOne(), match.getPlayerTwo(), match));
                         match.setCountdownRunning(false);
