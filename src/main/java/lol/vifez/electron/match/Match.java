@@ -6,11 +6,16 @@ import lol.vifez.electron.kit.Kit;
 import lol.vifez.electron.kit.enums.KitType;
 import lol.vifez.electron.match.enums.MatchState;
 import lol.vifez.electron.profile.Profile;
+import lol.vifez.electron.util.CC;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import lol.vifez.electron.util.ItemBuilder;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -96,11 +101,79 @@ public class Match {
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         denyMovement(player);
 
-        ItemStack[] contents = profile.getKitLoadout().getOrDefault(kit.getName(), kit.getContents());
-        player.getInventory().setContents(contents);
-        player.getInventory().setArmorContents(kit.getArmorContents());
+        // Clear immediately to prevent lobby items from being used
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
         player.updateInventory();
 
+        Bukkit.getScheduler().runTask(instance, () -> {
+            player.getInventory().clear();
+            player.getInventory().setArmorContents(null);
+
+            ItemStack[] kitContents = profile.getKitLoadout().getOrDefault(kit.getName(), kit.getContents()).clone();
+            ItemStack[] contents = new ItemStack[36];
+            System.arraycopy(kitContents, 0, contents, 0, Math.min(kitContents.length, 36));
+            
+            if (kit.isBedFight()) {
+                Color teamColor = getTeamColor(profile);
+                short durability = getTeamDurability(profile);
+
+                for (int i = 0; i < contents.length; i++) {
+                    ItemStack item = contents[i];
+                    if (item == null) continue;
+
+                    if (item.getType() == Material.WOOL || item.getType() == Material.STAINED_CLAY || item.getType() == Material.STAINED_GLASS) {
+                        contents[i] = new ItemBuilder(item).durability(durability).build();
+                    }
+                }
+
+                ItemStack[] armor = kit.getArmorContents().clone();
+                for (int i = 0; i < armor.length; i++) {
+                    ItemStack piece = armor[i];
+                    if (piece != null && piece.getType().name().contains("LEATHER_")) {
+                        armor[i] = new ItemBuilder(piece).color(teamColor).build();
+                    }
+                }
+                player.getInventory().setArmorContents(armor);
+            } else {
+                player.getInventory().setArmorContents(kit.getArmorContents());
+            }
+
+            player.getInventory().setContents(contents);
+            player.updateInventory();
+        });
+
         if (profile.getQueue() != null) profile.getQueue().remove(player);
+    }
+
+    public Color getTeamColor(Profile profile) {
+        return profile.getUuid().equals(playerOne.getUuid()) ? Color.RED : Color.BLUE;
+    }
+
+    public short getTeamDurability(Profile profile) {
+        return (short) (profile.getUuid().equals(playerOne.getUuid()) ? 14 : 11);
+    }
+
+    public String getTeamChatColor(Profile profile) {
+        return profile.getUuid().equals(playerOne.getUuid()) ? "&c" : "&9";
+    }
+
+    public void respawn(Player player) {
+        Profile profile = instance.getProfileManager().getProfile(player.getUniqueId());
+        teleportAndSetup(profile, profile.getUuid().equals(playerOne.getUuid()));
+        allowMovement(player);
+        player.sendMessage(CC.translate("&aYou have respawned!"));
+    }
+
+    public boolean isBedBroken(Profile profile) {
+        return profile.getUuid().equals(playerOne.getUuid()) ? bedBrokenOne : bedBrokenTwo;
+    }
+
+    public void setBedBroken(Profile profile, boolean broken) {
+        if (profile.getUuid().equals(playerOne.getUuid())) {
+            bedBrokenOne = broken;
+        } else {
+            bedBrokenTwo = broken;
+        }
     }
 }

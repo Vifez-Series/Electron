@@ -32,6 +32,7 @@ public class Kit {
 
     private int weight = 0;
     private boolean ranked = false;
+    private boolean bedFight = false;
 
     public ItemStack getDisplayItem() {
         ItemStack item = icon.clone();
@@ -50,6 +51,7 @@ public class Kit {
         section.set("kitType", kitType.name());
         section.set("weight", weight);
         section.set("ranked", ranked);
+        section.set("bedFight", bedFight);
     }
 
     public static Kit fromConfig(String name, ConfigurationSection section) {
@@ -105,6 +107,7 @@ public class Kit {
 
         kit.setWeight(section.getInt("weight", 0));
         kit.setRanked(section.getBoolean("ranked", false));
+        kit.setBedFight(section.getBoolean("bedFight", false));
 
         return kit;
     }

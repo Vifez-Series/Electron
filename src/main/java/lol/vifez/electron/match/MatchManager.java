@@ -61,6 +61,7 @@ public class MatchManager {
     public void start(Match match) {
         match.setMatchState(MatchState.STARTING);
         match.getArena().setBusy(true);
+        add(match);
 
         match.teleportAndSetup(match.getPlayerOne(), true);
         match.teleportAndSetup(match.getPlayerTwo(), false);
@@ -80,13 +81,40 @@ public class MatchManager {
 
         for (Profile profile : profiles) {
             Player player = profile.getPlayer();
-            CC.sendMessage(player, winner == null ? "&cMatch has ended!" : "&aMatch finished!");
-            player.playSound(player.getLocation(), Sound.NOTE_PLING, 0.5f, 0.5f);
-            resetPlayerAfterMatch(player);
+            if (player == null) continue;
+
+            if (winner == null) {
+                player.sendMessage(CC.translate("&cMatch has ended in a draw!"));
+                player.sendTitle(CC.translate("&c&lDRAW!"), CC.translate("&7No one won the match."));
+            } else if (profile.equals(winner)) {
+                player.sendMessage(CC.translate("&aYou have won the match!"));
+                player.sendTitle(CC.translate("&a&lVICTORY!"), CC.translate("&7You defeated " + loser.getName() + "!"));
+                player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            } else {
+                player.sendMessage(CC.translate("&cYou have lost the match!"));
+                player.sendTitle(CC.translate("&c&lDEFEAT!"), CC.translate("&7You were defeated by " + winner.getName() + "!"));
+                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            }
         }
 
+        Bukkit.getScheduler().runTaskLater(Practice.getInstance(), () -> {
+            for (Profile profile : profiles) {
+                Player player = profile.getPlayer();
+                if (player != null) {
+                    resetPlayerAfterMatch(player);
+                }
+            }
+
+            if (match.getKit().isBedFight() || match.getArena().getType().contains("build")) {
+                Practice.getInstance().getChunkRestorationManager().getIChunkRestoration().reset(match.getArena());
+            } else {
+                match.getArena().fixArena();
+            }
+
+            remove(match);
+        }, 60L); // 3 seconds delay
+
         Bukkit.getPluginManager().callEvent(new MatchEndEvent(match.getPlayerOne(), match.getPlayerTwo(), match));
-        remove(match);
     }
 
     private void resetPlayerAfterMatch(Player player) {
