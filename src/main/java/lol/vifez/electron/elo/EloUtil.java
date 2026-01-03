@@ -52,17 +52,21 @@ public class EloUtil {
 	}
 
 	public static int getGlobalElo(Profile profile) {
-		int totalElo = 0;
-		int kitCount = 0;
+		int highest = DEFAULT_ELO;
+		boolean found = false;
 
 		for (Kit kit : Practice.getInstance().getKitManager().getKits().values()) {
-			if (kit.isRanked()) {
-				totalElo += profile.getElo(kit);
-				kitCount++;
-			}
+			if (!kit.isRanked()) continue;
+
+			int elo = profile.getElo(kit);
+
+			if (elo == DEFAULT_ELO) continue;
+
+			highest = Math.max(highest, elo);
+			found = true;
 		}
 
-		return kitCount > 0 ? totalElo / kitCount : DEFAULT_ELO;
+		return found ? highest : DEFAULT_ELO;
 	}
 
 	public static void setElo(Profile profile, int amount) {

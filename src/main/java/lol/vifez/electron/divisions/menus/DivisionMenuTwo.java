@@ -83,7 +83,7 @@ public class DivisionMenuTwo extends Menu {
                         .build(),
                 true,
                 false,
-                () -> new DivisionsMenu().openMenu(player)
+                () -> new DivisionsMenu(1).openMenu(player)
         ));
 
         return buttons;

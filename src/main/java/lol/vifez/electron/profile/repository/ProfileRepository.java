@@ -23,12 +23,14 @@ public class ProfileRepository extends MongoRepository<Profile> {
         setCollection(mongoAPI.getDatabase().getCollection("profiles"));
     }
 
-    @Override
     public CompletableFuture<Void> saveData(String id, Profile profile) {
+        if (!getMongoAPI().isConnected()) {
+            return CompletableFuture.completedFuture(null);
+        }
+
         return CompletableFuture.runAsync(() -> {
             try {
                 Document doc = Document.parse(getGson().toJson(profile));
-
                 doc.put("_id", id);
                 doc.put("uuid", id);
 
@@ -38,8 +40,8 @@ public class ProfileRepository extends MongoRepository<Profile> {
                         new ReplaceOptions().upsert(true)
                 );
             } catch (Exception e) {
+                System.out.println("[Mongo] Failed to save profile " + id);
                 e.printStackTrace();
-                System.out.println("[Mongo] Failed to save profile " + id + ": " + e.getMessage());
             }
         });
     }

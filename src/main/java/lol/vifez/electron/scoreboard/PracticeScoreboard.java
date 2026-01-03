@@ -44,6 +44,7 @@ public class PracticeScoreboard implements AssembleAdapter {
         List<String> lines = new ArrayList<>();
         Practice plugin = Practice.getInstance();
         Profile profile = plugin.getProfileManager().getProfile(player.getUniqueId());
+        String inFight = String.valueOf(plugin.getMatchManager().getTotalPlayersInMatches());
 
         if (!profile.isScoreboardEnabled() || !scoreboardConfig.getBoolean("SCOREBOARD.ENABLED")) return lines;
 
@@ -53,6 +54,16 @@ public class PracticeScoreboard implements AssembleAdapter {
 
         Match match = profile.getMatch();
         List<String> template;
+
+        String elo;
+        if (match != null) {
+            elo = String.valueOf(profile.getElo(match.getKit()));
+        } else if (plugin.getQueueManager().getQueue(profile.getUuid()) != null) {
+            Queue q = plugin.getQueueManager().getQueue(profile.getUuid());
+            elo = String.valueOf(profile.getElo(q.getKit()));
+        } else {
+            elo = globalElo;
+        }
 
         if (match != null) {
             int hits = match.getHitsMap().getOrDefault(profile.getUuid(), 0);
@@ -71,6 +82,9 @@ public class PracticeScoreboard implements AssembleAdapter {
             for (String str : template) {
                 Profile opponent = match.getOpponent(profile);
                 lines.add(str
+                        .replace("<elo>", elo)
+                        .replace("<global-elo>", globalElo)
+                        .replace("<in-fight>", inFight)
                         .replace("<ping>", String.valueOf(profile.getPing()))
                         .replace("<opponent-ping>", opponent != null ? String.valueOf(opponent.getPing()) : "0")
                         .replace("<opponent>", opponent != null ? opponent.getName() : "None")
@@ -104,6 +118,9 @@ public class PracticeScoreboard implements AssembleAdapter {
 
             for (String str : template) {
                 lines.add(str
+                        .replace("<elo>", elo)
+                        .replace("<global-elo>", globalElo)
+                        .replace("<in-fight>", inFight)
                         .replace("<kit>", queueKit.getName() + " " + typeTag)
                         .replace("<time>", queue.getQueueTime(profile.getUuid()))
                         .replace("<online>", String.valueOf(Bukkit.getOnlinePlayers().size()))
@@ -120,6 +137,9 @@ public class PracticeScoreboard implements AssembleAdapter {
             template = scoreboardConfig.getStringList("SCOREBOARD.IN-LOBBY.LINES");
             for (String str : template) {
                 lines.add(str
+                        .replace("<elo>", elo)
+                        .replace("<global-elo>", globalElo)
+                        .replace("<in-fight>", inFight)
                         .replace("<online>", String.valueOf(Bukkit.getOnlinePlayers().size()))
                         .replace("<in-queue>", String.valueOf(plugin.getQueueManager().getAllQueueSize()))
                         .replace("<playing>", String.valueOf(plugin.getMatchManager().getTotalPlayersInMatches()))

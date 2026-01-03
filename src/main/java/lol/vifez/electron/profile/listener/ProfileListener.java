@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
+import java.util.UUID;
 
 /*
  * Electron © Vifez
@@ -39,19 +40,19 @@ public class ProfileListener implements Listener {
         if (instance.getProfileManager() == null) return;
 
         ProfileManager manager = instance.getProfileManager();
-        Profile profile = manager.getProfile(event.getUniqueId());
-
-        if (profile == null) {
-            profile = new Profile(event.getUniqueId());
-            manager.save(profile);
-        }
-
-        if (profile.getName() == null || !profile.getName().equals(event.getName())) {
-            profile.setName(event.getName());
-        }
+        UUID uuid = event.getUniqueId();
 
         manager.getRepository()
-                .saveData(profile.getUuid().toString(), profile);
+                .getData(uuid.toString(), Profile.class)
+                .thenAccept(profile -> {
+                    if (profile == null) {
+                        profile = new Profile(uuid);
+                    }
+
+                    profile.setName(event.getName());
+                    manager.save(profile);
+                })
+                .join();
     }
 
     @EventHandler

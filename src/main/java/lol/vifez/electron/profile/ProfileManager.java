@@ -49,8 +49,12 @@ public class ProfileManager {
     }
 
     public void close() {
-        profiles.values().forEach(p ->
-                repository.saveData(p.getUuid().toString(), p)
-        );
+        profiles.values().forEach(p -> {
+            try {
+                repository.saveData(p.getUuid().toString(), p).join();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

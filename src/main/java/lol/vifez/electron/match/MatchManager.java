@@ -91,6 +91,8 @@ public class MatchManager {
 
         if (winner != null && loser != null && match.isRanked()) {
             updateEloForRankedMatch(winner, loser, match.getKit());
+            Practice.getInstance().getProfileManager().save(winner);
+            Practice.getInstance().getProfileManager().save(loser);
         }
 
         Profile[] profiles = (winner == null || loser == null)
@@ -108,6 +110,12 @@ public class MatchManager {
 
         match.setMatchState(MatchState.ENDED);
         remove(match);
+
+        for (Profile profile : profiles) {
+            if (profile != null) {
+                Practice.getInstance().getProfileManager().save(profile);
+            }
+        }
     }
 
     private void resetPlayerAfterMatch(Player player) {

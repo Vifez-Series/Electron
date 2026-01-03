@@ -44,7 +44,7 @@ public class Match {
 
     private int countdownTime = 5;
     @Getter @Setter private int currentCountdown = -1;
-    @Getter @Setter private boolean countdownRunning = false;
+    @Getter @Setter private boolean countdownRunning;
     @Getter @Setter private BukkitTask countdownTask;
 
     private final Instant startTime = Instant.now();

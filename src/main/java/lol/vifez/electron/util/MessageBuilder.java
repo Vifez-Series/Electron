@@ -8,11 +8,11 @@ import org.bukkit.entity.Player;
 
 public class MessageBuilder {
     private final String text;
-    private boolean translate = false;
-    private boolean clickable = false;
-    private boolean hover = false;
-    private String hoverText = null;
-    private ClickEvent clickEvent = null;
+    private boolean translate;
+    private boolean clickable;
+    private boolean hover;
+    private String hoverText;
+    private ClickEvent clickEvent;
 
     public String getText() {
         return this.text;

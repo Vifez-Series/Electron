@@ -213,13 +213,19 @@ public final class Practice extends JavaPlugin {
 
     private void sendMessage(String message) {
         Bukkit.getConsoleSender().sendMessage(CC.translate(message));
-}
+    }
 
     @Override
     public void onDisable() {
-        if (profileManager != null) profileManager.close();
+        if (profileManager != null) {
+            profileManager.close();
+        }
+
         if (arenaManager != null) arenaManager.close();
         if (kitManager != null) kitManager.close();
-        if (mongoAPI != null) mongoAPI.close();
+
+        if (mongoAPI != null) {
+            mongoAPI.close();
+        }
     }
 }

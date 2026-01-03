@@ -43,8 +43,8 @@ public class Profile {
 
     private int wins = 0, losses = 0, winStreak = 0;
 
-    private boolean editMode = false;
-    private boolean buildMode = false;
+    private boolean editMode;
+    private boolean buildMode;
 
     private final Map<String, ItemStack[]> kitLoadout = new HashMap<>();
     private final Map<String, Integer> kitWins = new HashMap<>();

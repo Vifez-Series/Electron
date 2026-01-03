@@ -5,12 +5,15 @@ SCOREBOARD:
 
   IN-LOBBY:
     LINES:
-      - "&7&m-------------------"
-      - "&b&l ▎ &fOnline: &b<online>"
-      - "&b&l ▎ &fFighting: &b<in-queue>"
       - " "
+      - " &fOnline &7» &b<online>"
+      - " &fQueue &7» &b<in-queue>"
+      - " &fFighting &7» &b<in-fight>"
+      - " "
+      - " &fYour Elo &7» &b<elo>"
+      - " &fDivision &7» &b<division>"
       - "<footer>"
-      - "&7&m-------------------"
+      - " "
 
   IN-QUEUE:
     LINES:
