@@ -5,15 +5,13 @@ SCOREBOARD:
 
   IN-LOBBY:
     LINES:
+      - "&7&m-------------------"
+      - "&b&l ▎ &fOnline: &b<online>"
+      - "&b&l ▎ &fQueue: &b<in-queue>"
+      - "&b&l ▎ &fFighting; &b<in-fight>"
       - " "
-      - " &fOnline &7» &b<online>"
-      - " &fQueue &7» &b<in-queue>"
-      - " &fFighting &7» &b<in-fight>"
-      - " "
-      - " &fYour Elo &7» &b<elo>"
-      - " &fDivision &7» &b<division>"
       - "<footer>"
-      - " "
+      - "&7&m-------------------"
 
   IN-QUEUE:
     LINES:
@@ -21,6 +19,7 @@ SCOREBOARD:
       - "&b&lQueueing&7:"
       - "&b&l ▎ &fKit: &b<kit>"
       - "&b&l ▎ &fTime: &b<time>"
+      - "&b&l ▎ &fFighting; &b<in-fight>"
       - " "
       - "<footer>"
       - "&7&m-------------------"
