@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -21,8 +22,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/*
+ * Electron © Vifez
+ * Developed by Vifez
+ * Copyright (c) 2025 Vifez. All rights reserved.
+ */
+
 @Data
 public class Match {
+
+    private final UUID matchId = UUID.randomUUID();
 
     private final Practice instance;
     private final Profile playerOne, playerTwo;
@@ -34,14 +43,14 @@ public class Match {
     private MatchState matchState = MatchState.STARTING;
 
     private int countdownTime = 5;
-    @Getter @Setter
-    private int currentCountdown = -1;
-    @Getter @Setter
-    private boolean countdownRunning = false;
+    @Getter @Setter private int currentCountdown = -1;
+    @Getter @Setter private boolean countdownRunning = false;
+    @Getter @Setter private BukkitTask countdownTask;
 
-    private Instant startTime;
-    private Map<UUID, Integer> hitsMap = new HashMap<>();
-    private boolean bedBrokenOne = false, bedBrokenTwo = false;
+    private final Instant startTime = Instant.now();
+
+    private final Map<UUID, Integer> hitsMap = new HashMap<>();
+    private boolean bedBrokenOne, bedBrokenTwo;
 
     public Match(Practice instance, Profile playerOne, Profile playerTwo, Kit kit, Arena arena, boolean ranked) {
         this.instance = instance;
@@ -49,7 +58,6 @@ public class Match {
         this.playerTwo = playerTwo;
         this.kit = kit;
         this.arena = arena;
-        this.startTime = Instant.now();
         this.ranked = ranked;
         this.waterKill = kit.getKitType() == KitType.WATER_KILL;
 
@@ -101,6 +109,8 @@ public class Match {
         player.getInventory().setArmorContents(kit.getArmorContents());
         player.updateInventory();
 
-        if (profile.getQueue() != null) profile.getQueue().remove(player);
+        if (profile.getQueue() != null) {
+            profile.getQueue().remove(player);
+        }
     }
 }

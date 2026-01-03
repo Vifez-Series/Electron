@@ -2,17 +2,17 @@ package lol.vifez.electron.match;
 
 import lol.vifez.electron.Practice;
 import lol.vifez.electron.elo.EloUtil;
+import lol.vifez.electron.hotbar.Hotbar;
 import lol.vifez.electron.kit.Kit;
 import lol.vifez.electron.match.enums.MatchState;
 import lol.vifez.electron.match.event.MatchEndEvent;
-import lol.vifez.electron.match.event.MatchStartEvent;
 import lol.vifez.electron.profile.Profile;
 import lol.vifez.electron.util.CC;
-import lol.vifez.electron.hotbar.Hotbar;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,37 +25,46 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MatchManager {
 
-    private final Map<UUID, Match> matches = new ConcurrentHashMap<>();
+    private final Map<UUID, Match> matchByPlayer = new ConcurrentHashMap<>();
+
+    private final Map<UUID, Match> activeMatches = new ConcurrentHashMap<>();
 
     public Match getMatch(UUID uuid) {
-        return matches.get(uuid);
+        return matchByPlayer.get(uuid);
     }
 
-    public Map<UUID, Match> getMatches() {
-        return matches;
+    public Collection<Match> getActiveMatches() {
+        return activeMatches.values();
     }
 
     public void add(Match match) {
-        matches.put(match.getPlayerOne().getUuid(), match);
-        matches.put(match.getPlayerTwo().getUuid(), match);
+        activeMatches.put(match.getMatchId(), match);
+        matchByPlayer.put(match.getPlayerOne().getUuid(), match);
+        matchByPlayer.put(match.getPlayerTwo().getUuid(), match);
     }
 
     public void remove(Match match) {
         match.getArena().setBusy(false);
-        matches.remove(match.getPlayerOne().getUuid());
-        matches.remove(match.getPlayerTwo().getUuid());
+
+        activeMatches.remove(match.getMatchId());
+        matchByPlayer.remove(match.getPlayerOne().getUuid());
+        matchByPlayer.remove(match.getPlayerTwo().getUuid());
     }
 
     public int getTotalPlayersInMatches() {
-        return matches.values().stream().mapToInt(m -> m.getMatchState() == MatchState.STARTED ? 2 : 0).sum();
+        int total = 0;
+        for (Match match : activeMatches.values()) {
+            if (match.getMatchState() == MatchState.STARTED) total += 2;
+        }
+        return total;
     }
 
     public int getPlayersInKitMatches(Kit kit) {
-        return matches.values().stream()
-                .filter(match -> match.getKit().equals(kit))
-                .filter(match -> match.getMatchState() == MatchState.STARTED)
-                .mapToInt(match -> 2)
-                .sum();
+        int total = 0;
+        for (Match match : activeMatches.values()) {
+            if (match.getMatchState() == MatchState.STARTED && match.getKit().equals(kit)) total += 2;
+        }
+        return total;
     }
 
     public void start(Match match) {
@@ -64,28 +73,40 @@ public class MatchManager {
 
         match.teleportAndSetup(match.getPlayerOne(), true);
         match.teleportAndSetup(match.getPlayerTwo(), false);
-
-        Bukkit.getPluginManager().callEvent(new MatchStartEvent(match.getPlayerOne(), match.getPlayerTwo(), match));
     }
 
     public void end(Match match) {
+        if (match.getMatchState() == MatchState.ENDING || match.getMatchState() == MatchState.ENDED) return;
+
         match.setMatchState(MatchState.ENDING);
 
+        if (match.getCountdownTask() != null) {
+            match.getCountdownTask().cancel();
+            match.setCountdownTask(null);
+        }
+        match.setCountdownRunning(false);
+
         Profile winner = match.getWinner();
-        Profile loser = winner == null ? null : match.getOpponent(winner);
+        Profile loser = (winner == null) ? null : match.getOpponent(winner);
 
-        if (winner != null && match.isRanked()) updateEloForRankedMatch(winner, loser, match.getKit());
+        if (winner != null && loser != null && match.isRanked()) {
+            updateEloForRankedMatch(winner, loser, match.getKit());
+        }
 
-        Profile[] profiles = winner == null ? new Profile[]{match.getPlayerOne(), match.getPlayerTwo()} : new Profile[]{winner, loser};
+        Profile[] profiles = (winner == null || loser == null)
+                ? new Profile[]{match.getPlayerOne(), match.getPlayerTwo()}
+                : new Profile[]{winner, loser};
 
         for (Profile profile : profiles) {
             Player player = profile.getPlayer();
-            CC.sendMessage(player, winner == null ? "&cMatch has ended!" : "&aMatch finished!");
+            CC.sendMessage(player, (winner == null) ? "&cMatch has ended!" : "&aMatch finished!");
             player.playSound(player.getLocation(), Sound.NOTE_PLING, 0.5f, 0.5f);
             resetPlayerAfterMatch(player);
         }
 
         Bukkit.getPluginManager().callEvent(new MatchEndEvent(match.getPlayerOne(), match.getPlayerTwo(), match));
+
+        match.setMatchState(MatchState.ENDED);
         remove(match);
     }
 
@@ -94,6 +115,7 @@ public class MatchManager {
         player.getInventory().setArmorContents(null);
         player.teleport(Practice.getInstance().getSpawnLocation());
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        player.updateInventory();
     }
 
     private void updateEloForRankedMatch(Profile winner, Profile loser, Kit kit) {
@@ -109,7 +131,10 @@ public class MatchManager {
         winner.checkDivision(kit);
         loser.checkDivision(kit);
 
-        CC.sendMessage(winner.getPlayer(), "&aYou won! &7ELO: " + (newWinnerElo - winnerElo >= 0 ? "&a+" : "&c") + (newWinnerElo - winnerElo));
-        CC.sendMessage(loser.getPlayer(), "&cYou lost! &7ELO: " + (newLoserElo - loserElo >= 0 ? "&a+" : "&c") + (newLoserElo - loserElo));
+        int wDiff = newWinnerElo - winnerElo;
+        int lDiff = newLoserElo - loserElo;
+
+        CC.sendMessage(winner.getPlayer(), "&aYou won! &7ELO: &b" + (wDiff >= 0 ? "&a+" : "&c") + wDiff);
+        CC.sendMessage(loser.getPlayer(), "&cYou lost! &7ELO: " + (lDiff >= 0 ? "&a+" : "&c") + lDiff);
     }
 }
