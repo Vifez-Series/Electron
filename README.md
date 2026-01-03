@@ -20,23 +20,26 @@ Feel free to fork and contribute! 😎
 Need help or want to join the community?  
 [Join our Discord Server](https://discord.gg/kKKC85rkXU)
 
-# Features
-- **NEW** Navigator menu
-- Leaderboards (Per kit + Global elo)
-- Conversations (/msg, /r)
-- Scoreboard (configurable)
-- Tablist (configurable)
-- Join MOTD + Title
-- PlaceholderAPI Support (and custom placeholders)
-- MongoDB For data saving
-- Duels
-- Spectate
-- Auto respawn
-- Hotbar
-- Build mode
-- Elo management
-- Spawn system (/setspawn)
-- More command (x64 of whatever in ur hand)
+## What's Inside?
+- **Ranked lock** Unlock ranked queues after 10 unranked wins [toggleable]
+- **Forfeit matches** Allow players to forfeit active matches
+- **Rematch system** Request a rematch with previous opponents
+- **Build mode** Enable arena building for setup and testing
+- **Item renaming** Rename items via command
+- **Spawn system** Central spawn handling for joins and deaths
+- **Queues** Unranked and ranked queue system
+- **Kits** Menu based kit editor and management
+- **Arenas** Menu based arena editor and management
+- **Matches** Full match lifecycle with countdowns and duration tracking
+- **Scoreboard** Animated, context aware scoreboard (player state based)
+- **Profile storage** MongoDB persistent player profiles
+- **Divisions & ELO** Competitive ranking with admin management via `/elo`
+- **Private messaging** Conversations using `/msg` and `/r`
+- **Duels** Challenge players directly using `/duel <player>`
+- **Hotbar system** Interactive hotbar actions
+- **Leaderboards** Global and kit-based leaderboards
+- **Navigator menu** Central UI navigation menu
+- **Settings** Player-configurable options [scoreboard, messages, world time]
 *And More...*
 
 # Support
