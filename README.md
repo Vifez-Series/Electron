@@ -44,7 +44,7 @@ Need help or want to join the community?
 
 # Support
 Need support? You can join our discord server and create a ticket!
-- https://discord.vifez.lol
+- [Join here](https://discord.gg/a9RhfWEMHJ)
 
 ## 🛠 Permissions
 
@@ -55,23 +55,20 @@ Need support? You can join our discord server and create a ticket!
 | `electron.user`     | Standard user commands            |
 
 # Dependencies
-- Packet events
-- ProtocolLib
 - 1.8
 - MongoDB
 
 # Credits
 - **Vifez** - Main developer & Current maintainer
-- **MTR** - Contributed heavily with me at the start
+- **MTR** - Contributed at the start
 - **Lugami** - Insane ass pull request
-- **Mqaaz** - Add 1 global title to scoreboard
+- **Mqaaz** - Added 1 global title to scoreboard
 
 # Compiling
 - Clone the repo to your intellij
 - Let maven do its magic
 - run `mvn package`
-- add `target/Electron.jar` to ur server
-- add `libs/packetevents-2.7.0.jar` to ur server
+- add `target/Electron-vX.X.X.jar` to ur server
 - run ur server for configs to load, add mongo
 - and boom... practice server!
 ---
