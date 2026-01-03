@@ -2,6 +2,7 @@ package lol.vifez.electron.kit;
 
 import lol.vifez.electron.Practice;
 import lol.vifez.electron.kit.enums.KitType;
+import lol.vifez.electron.util.ItemBuilder;
 import lol.vifez.electron.util.SerializationUtil;
 import lombok.Data;
 import org.bukkit.ChatColor;
@@ -21,21 +22,23 @@ import java.util.List;
 @Data
 public class Kit {
 
+    private static final ItemStack[] EMPTY_ITEMS = new ItemStack[0];
+    private static final ItemStack DEFAULT_ICON = new ItemStack(Material.BOOK);
+
     private final String name;
     private List<String> description = new ArrayList<>();
-
-    private ItemStack[] contents = new ItemStack[]{}, armorContents = new ItemStack[]{};
-    private ItemStack icon = new ItemStack(Material.BOOK);
+    private ItemStack[] contents = EMPTY_ITEMS;
+    private ItemStack[] armorContents = EMPTY_ITEMS;
+    private ItemStack icon = DEFAULT_ICON;
 
     private ChatColor color = ChatColor.AQUA;
     private KitType kitType = KitType.REGULAR;
 
-    private int weight = 0;
-    private boolean ranked = false;
+    private int weight;
+    private boolean ranked;
 
     public ItemStack getDisplayItem() {
-        ItemStack item = icon.clone();
-        return new lol.vifez.electron.util.ItemBuilder(item)
+        return new ItemBuilder(icon.clone())
                 .name(color + name)
                 .lore(description)
                 .build();
@@ -55,57 +58,70 @@ public class Kit {
     public static Kit fromConfig(String name, ConfigurationSection section) {
         Kit kit = new Kit(name);
         kit.setDescription(section.getStringList("description"));
-
-        try {
-            String contentsData = section.getString("contents");
-            if (contentsData != null && !contentsData.isEmpty()) {
-                kit.setContents(SerializationUtil.deserializeItemStackArray(contentsData));
-            } else {
-                kit.setContents(new ItemStack[0]);
-            }
-        } catch (Exception e) {
-            kit.setContents(new ItemStack[0]);
-            Practice.getInstance().getLogger().warning("Failed to load contents for kit " + name + ": " + e.getMessage());
-        }
-
-        try {
-            String armorData = section.getString("armorContents");
-            if (armorData != null && !armorData.isEmpty()) {
-                kit.setArmorContents(SerializationUtil.deserializeItemStackArray(armorData));
-            } else {
-                kit.setArmorContents(new ItemStack[0]);
-            }
-        } catch (Exception e) {
-            kit.setArmorContents(new ItemStack[0]);
-            Practice.getInstance().getLogger().warning("Failed to load armor for kit " + name + ": " + e.getMessage());
-        }
-
-        try {
-            String iconData = section.getString("icon");
-            if (iconData != null && !iconData.isEmpty()) {
-                kit.setIcon(SerializationUtil.deserializeItemStack(iconData));
-            } else if (section.isString("icon")) {
-                try {
-                    kit.setIcon(new ItemStack(Material.valueOf(section.getString("icon"))));
-                } catch (IllegalArgumentException ignored) {
-                    kit.setIcon(new ItemStack(Material.BOOK));
-                }
-            }
-        } catch (Exception e) {
-            kit.setIcon(new ItemStack(Material.BOOK));
-            Practice.getInstance().getLogger().warning("Failed to load icon for kit " + name + ": " + e.getMessage());
-        }
-
-        if (section.isString("color")) {
-            try { kit.setColor(ChatColor.valueOf(section.getString("color"))); } catch (IllegalArgumentException ignored) {}
-        }
-        if (section.isString("kitType")) {
-            try { kit.setKitType(KitType.valueOf(section.getString("kitType"))); } catch (IllegalArgumentException ignored) {}
-        }
-
+        kit.setContents(deserializeItemArray(section, "contents"));
+        kit.setArmorContents(deserializeItemArray(section, "armorContents"));
+        kit.setIcon(deserializeIcon(section));
+        kit.setColor(parseEnum(section, "color", ChatColor.class, ChatColor.AQUA));
+        kit.setKitType(parseEnum(section, "kitType", KitType.class, KitType.REGULAR));
         kit.setWeight(section.getInt("weight", 0));
         kit.setRanked(section.getBoolean("ranked", false));
 
         return kit;
+    }
+
+    private static ItemStack[] deserializeItemArray(ConfigurationSection section, String key) {
+        String data = section.getString(key);
+        if (data == null || data.isEmpty()) {
+            return EMPTY_ITEMS;
+        }
+
+        try {
+            return SerializationUtil.deserializeItemStackArray(data);
+        } catch (Exception e) {
+            logWarning("Failed to load " + key, e);
+            return EMPTY_ITEMS;
+        }
+    }
+
+    private static ItemStack deserializeIcon(ConfigurationSection section) {
+        String data = section.getString("icon");
+        if (data == null || data.isEmpty()) {
+            return DEFAULT_ICON.clone();
+        }
+
+        try {
+            return SerializationUtil.deserializeItemStack(data);
+        } catch (Exception ignored) {
+            try {
+                return new ItemStack(Material.valueOf(data));
+            } catch (Exception e) {
+                logWarning("Failed to load icon", e);
+                return DEFAULT_ICON.clone();
+            }
+        }
+    }
+
+    private static <T extends Enum<T>> T parseEnum(
+            ConfigurationSection section,
+            String key,
+            Class<T> enumClass,
+            T fallback
+    ) {
+        String value = section.getString(key);
+        if (value == null) {
+            return fallback;
+        }
+
+        try {
+            return Enum.valueOf(enumClass, value);
+        } catch (IllegalArgumentException ignored) {
+            return fallback;
+        }
+    }
+
+    private static void logWarning(String message, Exception e) {
+        Practice.getInstance()
+                .getLogger()
+                .warning(message + ": " + e.getMessage());
     }
 }

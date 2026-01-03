@@ -1,11 +1,9 @@
 package lol.vifez.electron;
 
 import co.aikar.commands.BukkitCommandManager;
-import com.github.retrooper.packetevents.PacketEvents;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
-import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lol.vifez.electron.arena.ArenaManager;
 import lol.vifez.electron.arena.commands.ArenaCommand;
 import lol.vifez.electron.arena.commands.ArenasCommand;
@@ -39,10 +37,7 @@ import lol.vifez.electron.queue.listener.QueueListener;
 import lol.vifez.electron.scoreboard.PracticeScoreboard;
 import lol.vifez.electron.scoreboard.ScoreboardConfig;
 import lol.vifez.electron.settings.command.SettingsCommand;
-import lol.vifez.electron.util.AutoRespawn;
-import lol.vifez.electron.util.CC;
-import lol.vifez.electron.util.ConfigFile;
-import lol.vifez.electron.util.SerializationUtil;
+import lol.vifez.electron.util.*;
 import lol.vifez.electron.util.adapter.ItemStackArrayTypeAdapter;
 import lol.vifez.electron.util.assemble.Assemble;
 import lol.vifez.electron.util.menu.MenuAPI;
@@ -83,16 +78,11 @@ public final class Practice extends JavaPlugin {
     @Getter @Setter private Location spawnLocation;
 
     @Override
-    public void onLoad() {
-        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-        PacketEvents.getAPI().init();
-    }
-
-    @Override
     public void onEnable() {
         instance = this;
         initializePlugin();
         new Assemble(this, new PracticeScoreboard());
+        VersionChecker.check();
     }
 
     private void initializePlugin() {
@@ -207,12 +197,12 @@ public final class Practice extends JavaPlugin {
 
     private void displayStartupInfo() {
         sendMessage(" ");
-        sendMessage("&b&lElectron Practice &7[V" + getDescription().getVersion() + "]");
-        sendMessage("&fAuthor: &bVifez");
-        sendMessage("&fCredits: &bVifez&f, &bMTR&f, &bLugami&f, &bmqaaz");
+        sendMessage("&b&lELECTRON &7[&bv" + getDescription().getVersion() + "]");
+        sendMessage("&7Lightweight practice core");
+        sendMessage("&7Developed by &bVifez");
         sendMessage(" ");
-        sendMessage("&fProtocol: &b" + getServer().getBukkitVersion());
-        sendMessage("&fSpigot: &b" + getServer().getName());
+        sendMessage("&fDownload this resource here");
+        sendMessage("&bhttps://github.com/Vifez-Series/electron");
         sendMessage(" ");
         sendMessage("&fKits: &b" + kitManager.getKits().size());
         sendMessage("&fArenas: &b" + arenaManager.getArenas().size());
@@ -223,7 +213,7 @@ public final class Practice extends JavaPlugin {
 
     private void sendMessage(String message) {
         Bukkit.getConsoleSender().sendMessage(CC.translate(message));
-    }
+}
 
     @Override
     public void onDisable() {
@@ -231,7 +221,5 @@ public final class Practice extends JavaPlugin {
         if (arenaManager != null) arenaManager.close();
         if (kitManager != null) kitManager.close();
         if (mongoAPI != null) mongoAPI.close();
-
-        PacketEvents.getAPI().terminate();
     }
 }

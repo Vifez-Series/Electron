@@ -17,6 +17,6 @@ public class DivisionsCommand extends BaseCommand {
 
     @Default
     public void onDivisions(Player player) {
-        new DivisionsMenu().openMenu(player);
+        new DivisionsMenu(1).openMenu(player);
     }
 }

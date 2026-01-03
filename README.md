@@ -1,6 +1,6 @@
 <img width="1042" height="583" alt="image" src="https://github.com/user-attachments/assets/8d72d6ad-8185-4ac0-9a91-c6a5c14a4bcb" />
 
-![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen?style=for-the-badge) ![Minecraft 1.7-1.8.9](https://img.shields.io/badge/Minecraft-1.7--1.8.9-blue?style=for-the-badge) ![Version 1.7.2](https://img.shields.io/badge/Version-1.7.1-blue?style=for-the-badge)
+![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen?style=for-the-badge) ![Minecraft 1.7-1.8.9](https://img.shields.io/badge/Minecraft-1.7--1.8.9-blue?style=for-the-badge) ![Version 1.7.2](https://img.shields.io/badge/Version-1.7.2-blue?style=for-the-badge)
 
 ---
 

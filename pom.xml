@@ -10,7 +10,6 @@
     <packaging>jar</packaging>
 
     <name>Practice</name>
-
     <properties>
         <java.version>8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

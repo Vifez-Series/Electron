@@ -1,6 +1,5 @@
 package lol.vifez.electron.profile;
 
-import com.google.gson.annotations.SerializedName;
 import lol.vifez.electron.Practice;
 import lol.vifez.electron.duel.DuelRequest;
 import lol.vifez.electron.kit.Kit;
@@ -21,11 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/* 
+/*
  * Electron © Vifez
  * Developed by Vifez
  * Copyright (c) 2025 Vifez. All rights reserved.
-*/
+ */
 
 @RequiredArgsConstructor
 @Getter
@@ -35,16 +34,17 @@ public class Profile {
     private final UUID uuid;
 
     private Player lastMessagedPlayer;
-
     private transient DuelRequest duelRequest;
 
-    private String name = "", currentQueue = "";
+    private String name = "";
+    private String currentQueue = "";
 
     private Divisions division = Divisions.SILVER_I;
 
     private int wins = 0, losses = 0, winStreak = 0;
 
-    private boolean editMode = false, buildMode = false;
+    private boolean editMode = false;
+    private boolean buildMode = false;
 
     private final Map<String, ItemStack[]> kitLoadout = new HashMap<>();
     private final Map<String, Integer> kitWins = new HashMap<>();
@@ -59,21 +59,20 @@ public class Profile {
     private Kit rematchKit;
 
     public Player getPlayer() {
-        Player p = Bukkit.getPlayer(uuid);
-        return (p != null && p.isOnline()) ? p : null;
+        Player player = Bukkit.getPlayer(uuid);
+        return (player != null && player.isOnline()) ? player : null;
     }
 
     public int getPing() {
         Player player = getPlayer();
-        if (player != null) {
-            try {
-                Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
-                return (int) entityPlayer.getClass().getField("ping").get(entityPlayer);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (player == null) return -1;
+
+        try {
+            Object handle = player.getClass().getMethod("getHandle").invoke(player);
+            return (int) handle.getClass().getField("ping").get(handle);
+        } catch (Exception ignored) {
+            return -1;
         }
-        return -1;
     }
 
     public int getElo(Kit kit) {
@@ -85,7 +84,7 @@ public class Profile {
     }
 
     public boolean inMatch() {
-        return Practice.getInstance().getMatchManager().getMatch(uuid) != null;
+        return getMatch() != null;
     }
 
     public Match getMatch() {
@@ -98,19 +97,18 @@ public class Profile {
 
     public void checkDivision(Kit kit) {
         int elo = getElo(kit);
-        Divisions playerDivision = division;
+        Divisions newDivision = division;
 
         for (Divisions d : Divisions.values()) {
-            if (elo >= d.getMinimumElo()) {
-                playerDivision = d;
-            } else break;
+            if (elo >= d.getMinimumElo()) newDivision = d;
+            else break;
         }
 
-        if (division != playerDivision) {
-            division = playerDivision;
+        if (newDivision != division) {
+            division = newDivision;
             Player player = getPlayer();
             if (player != null) {
-                CC.sendMessage(player, "&aYou are now in " + playerDivision.getPrettyName() + " &adivision!");
+                CC.sendMessage(player, "&aYou are now in " + newDivision.getPrettyName() + " &adivision!");
             }
         }
     }
@@ -120,53 +118,39 @@ public class Profile {
         Profile targetProfile = Practice.getInstance().getProfileManager().getProfile(target.getUniqueId());
 
         if (!duelRequestsEnabled) {
-            CC.sendMessage(sender, "&cYou cannot send a duel request while you are not allowing duel requests!");
+            CC.sendMessage(sender, "&cYou cannot send duel requests right now.");
             return;
         }
 
         if (!targetProfile.isDuelRequestsEnabled()) {
-            CC.sendMessage(sender, "&c" + target.getName() + " is not allowing duel requests!");
+            CC.sendMessage(sender, "&c" + target.getName() + " is not accepting duel requests.");
             return;
         }
 
         if (duelRequest != null && !duelRequest.isExpired()) {
             long seconds = (System.currentTimeMillis() - duelRequest.getRequestedAt()) / 1000;
-            CC.sendMessage(sender, "&cYou have already sent a duel request to " + target.getName() + ". Please wait " + seconds + "s.");
+            CC.sendMessage(sender, "&cYou already sent a request. Wait " + seconds + "s.");
             return;
         }
 
-        DuelRequest request = new DuelRequest(Practice.getInstance(), this, targetProfile, kit, System.currentTimeMillis());
+        DuelRequest request = new DuelRequest(
+                Practice.getInstance(),
+                this,
+                targetProfile,
+                kit,
+                System.currentTimeMillis()
+        );
+
         this.duelRequest = request;
         targetProfile.setDuelRequest(request);
 
-        CC.sendMessage(sender, CC.translate("\n&c&lDuel sent\n&f• Opponent: &c" + target.getName() + "\n&f• Kit: &c" + kit.getName() + "\n "));
+        CC.sendMessage(sender, "&c&lDuel sent\n&f• Opponent: &c" + target.getName() + "\n&f• Kit: &c" + kit.getName());
 
-        new MessageBuilder(CC.translate(
-                "\n&c&lDuel Request" +
-                        "\n&f• Opponent: &c" +
-                        name +
-                        "\n&f• Kit: &c" + kit.getName() +
-                        "\n&a&lCLICK TO ACCEPT\n"))
+        new MessageBuilder("&c&lDuel Request\n&f• Opponent: &c" + name + "\n&f• Kit: &c" + kit.getName() + "\n&a&lCLICK TO ACCEPT")
                 .hover(true)
                 .clickable(true)
                 .hoverText("&bClick to accept")
                 .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/duel accept " + name))
                 .sendMessage(target);
-    }
-
-    public Player getRematchOpponent() {
-        return rematchOpponent;
-    }
-
-    public void setRematchOpponent(Player rematchOpponent) {
-        this.rematchOpponent = rematchOpponent;
-    }
-
-    public Kit getRematchKit() {
-        return rematchKit;
-    }
-
-    public void setRematchKit(Kit rematchKit) {
-        this.rematchKit = rematchKit;
     }
 }

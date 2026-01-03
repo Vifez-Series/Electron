@@ -16,25 +16,32 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class KitManager {
 
-    private final Map<String, Kit> kits;
+    private final Map<String, Kit> kits = new ConcurrentHashMap<>();
 
     public KitManager() {
-        this.kits = new ConcurrentHashMap<>();
+        loadKits();
+    }
 
-        ConfigurationSection section = Practice.getInstance().getKitsFile().getConfiguration().getConfigurationSection("kits");
+    private void loadKits() {
+        ConfigurationSection section = Practice.getInstance()
+                .getKitsFile()
+                .getConfiguration()
+                .getConfigurationSection("kits");
 
-        if (section != null) {
-            section.getKeys(false).forEach(key -> {
-                ConfigurationSection kitSection = section.getConfigurationSection(key);
-                if (kitSection != null) {
-                    Kit kit = Kit.fromConfig(key, kitSection);
-                    kits.put(key, kit);
-                }
-            });
+        if (section == null) return;
+
+        for (String key : section.getKeys(false)) {
+            ConfigurationSection kitSection = section.getConfigurationSection(key);
+            if (kitSection == null) continue;
+
+            Kit kit = Kit.fromConfig(key, kitSection);
+            kits.put(key, kit);
         }
     }
 
     public Kit getKit(String name) {
+        if (name == null) return null;
+
         for (Kit kit : kits.values()) {
             if (kit.getName().equalsIgnoreCase(name)) {
                 return kit;
@@ -46,26 +53,33 @@ public class KitManager {
     public void save(Kit kit) {
         kits.put(kit.getName(), kit);
 
-        ConfigurationSection section = Practice.getInstance().getKitsFile().getConfiguration()
+        ConfigurationSection section = Practice.getInstance()
+                .getKitsFile()
+                .getConfiguration()
                 .createSection("kits." + kit.getName());
         kit.toConfig(section);
         Practice.getInstance().getKitsFile().save();
     }
 
     public void saveAll() {
-        ConfigurationSection section = Practice.getInstance().getKitsFile().getConfiguration()
+        ConfigurationSection root = Practice.getInstance()
+                .getKitsFile()
+                .getConfiguration()
                 .getConfigurationSection("kits");
 
-        if (section == null) {
-            section = Practice.getInstance().getKitsFile().getConfiguration().createSection("kits");
+        if (root == null) {
+            root = Practice.getInstance()
+                    .getKitsFile()
+                    .getConfiguration()
+                    .createSection("kits");
         }
 
         for (Kit kit : kits.values()) {
-            ConfigurationSection kitSection = section.getConfigurationSection(kit.getName());
-            if (kitSection == null) {
-                kitSection = section.createSection(kit.getName());
+            ConfigurationSection section = root.getConfigurationSection(kit.getName());
+            if (section == null) {
+                section = root.createSection(kit.getName());
             }
-            kit.toConfig(kitSection);
+            kit.toConfig(section);
         }
 
         Practice.getInstance().getKitsFile().save();
@@ -74,17 +88,24 @@ public class KitManager {
     public void delete(Kit kit) {
         kits.remove(kit.getName());
 
-        Practice.getInstance().getKitsFile().getConfiguration().set("kits." + kit.getName(), null);
+        Practice.getInstance()
+                .getKitsFile()
+                .getConfiguration()
+                .set("kits." + kit.getName(), null);
+
         Practice.getInstance().getKitsFile().save();
     }
 
     public void close() {
-        ConfigurationSection section = Practice.getInstance().getKitsFile().getConfiguration().createSection("kits");
+        ConfigurationSection root = Practice.getInstance()
+                .getKitsFile()
+                .getConfiguration()
+                .createSection("kits");
 
-        kits.values().forEach(kit -> {
-            ConfigurationSection kitSection = section.createSection(kit.getName());
-            kit.toConfig(kitSection);
-        });
+        for (Kit kit : kits.values()) {
+            ConfigurationSection section = root.createSection(kit.getName());
+            kit.toConfig(section);
+        }
 
         Practice.getInstance().getKitsFile().save();
     }

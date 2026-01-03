@@ -20,13 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class ProfileManager {
 
-    private final ProfileRepository profileRepository;
-    private final Map<UUID, Profile> profiles;
+    private final ProfileRepository repository;
+    private final Map<UUID, Profile> profiles = new ConcurrentHashMap<>();
 
-    public ProfileManager(ProfileRepository profileRepository) {
-        this.profileRepository = profileRepository;
-        this.profiles = new ConcurrentHashMap<>();
-
+    public ProfileManager(ProfileRepository repository) {
+        this.repository = repository;
         new ProfileListener(JavaPlugin.getPlugin(Practice.class));
     }
 
@@ -35,20 +33,24 @@ public class ProfileManager {
     }
 
     public Profile getProfile(String name) {
-        return profiles.values().stream().filter(profile -> profile.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+        return profiles.values().stream()
+                .filter(p -> p.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public void save(Profile profile) {
-        profiles.putIfAbsent(profile.getUuid(), profile);
+        profiles.put(profile.getUuid(), profile);
     }
 
     public void delete(Profile profile) {
         profiles.remove(profile.getUuid());
-
-        profileRepository.getCollection().deleteOne(Filters.eq("_id", profile.getUuid().toString()));
+        repository.getCollection().deleteOne(Filters.eq("_id", profile.getUuid().toString()));
     }
 
     public void close() {
-        profiles.values().forEach(profile -> profileRepository.saveData(profile.getUuid().toString(), profile));
+        profiles.values().forEach(p ->
+                repository.saveData(p.getUuid().toString(), p)
+        );
     }
 }

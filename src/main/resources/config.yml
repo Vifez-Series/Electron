@@ -22,3 +22,6 @@ SETTINGS:
       - " &7Duels, events, ranked"
       - " &7Multiple game modes available"
       - " "
+
+UPDATE-CHECKER:
+  ENABLED: true

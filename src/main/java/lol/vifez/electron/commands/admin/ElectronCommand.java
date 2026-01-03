@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
 import lol.vifez.electron.Practice;
 import lol.vifez.electron.util.CC;
+import lol.vifez.electron.util.VersionChecker;
 import org.bukkit.command.CommandSender;
 
 /* 
@@ -25,11 +26,16 @@ public class ElectronCommand extends BaseCommand {
         sender.sendMessage(CC.translate("&b&lElectron Practice &7[Open SRC]"));
         sender.sendMessage(CC.translate("&7&oLightweight open-source practice core"));
         sender.sendMessage(CC.translate(" "));
-        sender.sendMessage(CC.translate("&fAuthors: &bvifez &f& &eMTR"));
-        sender.sendMessage(CC.translate("&fVersion: &b" + Practice.getInstance().getDescription().getVersion()));
+        sender.sendMessage(CC.translate("&fAuthors: &bVifez"));
+        sender.sendMessage(CC.translate(
+                "&fVersion: &b" +
+                        Practice.getInstance().getDescription().getVersion() +
+                        " " +
+                        VersionChecker.getStatusTag()
+        ));
         sender.sendMessage(CC.translate(" "));
-        sender.sendMessage(CC.translate("&fDiscord: &bhttps://discord.vifez.lol"));
-        sender.sendMessage(CC.translate("&fGithub: &bhttps://electron.vifez.lol"));
+        sender.sendMessage(CC.translate("&fDiscord: &bhttps://discord.gg/ESJxCNtnyZ"));
+        sender.sendMessage(CC.translate("&fGithub: &bhttps://https://github.com/Vifez-Series/Electron"));
         sender.sendMessage(CC.translate(" "));
     }
 

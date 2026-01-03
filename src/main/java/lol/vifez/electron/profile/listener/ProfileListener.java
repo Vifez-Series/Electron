@@ -7,6 +7,7 @@ import lol.vifez.electron.profile.ProfileManager;
 import lol.vifez.electron.profile.menu.ProfileMenu;
 import lol.vifez.electron.util.CC;
 import lol.vifez.electron.hotbar.Hotbar;
+import lol.vifez.electron.util.VersionChecker;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -49,7 +50,7 @@ public class ProfileListener implements Listener {
             profile.setName(event.getName());
         }
 
-        manager.getProfileRepository()
+        manager.getRepository()
                 .saveData(profile.getUuid().toString(), profile);
     }
 
@@ -97,6 +98,7 @@ public class ProfileListener implements Listener {
             for (String message : messages) {
                 player.sendMessage(CC.translate(message));
             }
+            VersionChecker.notify(player);
         }
     }
 

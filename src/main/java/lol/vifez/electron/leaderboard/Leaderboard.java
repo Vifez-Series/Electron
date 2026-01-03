@@ -23,33 +23,33 @@ public class Leaderboard {
     }
 
     public List<Profile> getLeaderboard(Kit kit) {
+        Comparator<Profile> byElo = Comparator.comparingInt(p -> p.getElo(kit));
         return profileManager.getProfiles().values().stream()
-                .sorted(Comparator.comparingInt((Profile p) -> p.getElo(kit)).reversed())
+                .sorted(byElo.reversed())
                 .limit(10)
                 .collect(Collectors.toList());
     }
 
     public String[] getLeaderboardLayout(Kit kit) {
-        List<Profile> leaderboard = getLeaderboard(kit);
-        String[] layout = new String[10];
+        List<Profile> top = getLeaderboard(kit);
+        String[] lines = new String[10];
 
-        for (int i = 0; i < layout.length; i++) {
+        for (int i = 0; i < 10; i++) {
             int rank = i + 1;
-            if (i < leaderboard.size()) {
-                Profile profile = leaderboard.get(i);
-                layout[i] = getRankColor(rank) + "✩" + rank
-                        + " &f" + profile.getName()
-                        + " &7[&b" + profile.getElo(kit) + "&7]";
+            if (i < top.size()) {
+                Profile p = top.get(i);
+                lines[i] = getRankColor(rank) + "✩" + rank + " &f" + p.getName() +
+                        " &7[&b" + p.getElo(kit) + "&7]";
             } else {
-                layout[i] = getRankColor(rank) + "✩" + rank + " &cN/A";
+                lines[i] = getRankColor(rank) + "✩" + rank + " &cN/A";
             }
         }
-        return layout;
+        return lines;
     }
 
     public static String getRankColor(int rank) {
         if (rank == 1) return "&6";
-        if (rank == 2 || rank == 3) return "&e";
+        if (rank <= 3) return "&e";
         return "&b";
     }
 }
