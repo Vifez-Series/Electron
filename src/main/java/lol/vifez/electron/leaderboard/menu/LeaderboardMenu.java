@@ -89,7 +89,7 @@ public class LeaderboardMenu extends Menu {
         }
 
         int[] borderSlots = {
-                0, 1, 2, 3, 4, 5, 6, 7, 8,
+                0, 1, 2, 3, 5, 6, 7, 8,
                 9, 17, 18, 26, 27, 35,
                 36, 37, 38, 39, 41, 42, 43, 44
         };
