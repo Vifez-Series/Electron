@@ -1,8 +1,8 @@
 package lol.vifez.electron.leaderboard.menu;
 
 import lol.vifez.electron.Practice;
-import lol.vifez.electron.elo.EloUtil;
-import lol.vifez.electron.kit.Kit;
+import lol.vifez.electron.game.elo.EloUtil;
+import lol.vifez.electron.game.kit.Kit;
 import lol.vifez.electron.profile.Profile;
 import lol.vifez.electron.util.ItemBuilder;
 import lol.vifez.electron.util.menu.Menu;

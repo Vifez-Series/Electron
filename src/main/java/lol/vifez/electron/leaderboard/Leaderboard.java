@@ -1,6 +1,6 @@
 package lol.vifez.electron.leaderboard;
 
-import lol.vifez.electron.kit.Kit;
+import lol.vifez.electron.game.kit.Kit;
 import lol.vifez.electron.profile.Profile;
 import lol.vifez.electron.profile.ProfileManager;
 

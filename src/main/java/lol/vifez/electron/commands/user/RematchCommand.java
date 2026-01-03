@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import lol.vifez.electron.Practice;
-import lol.vifez.electron.kit.Kit;
+import lol.vifez.electron.game.kit.Kit;
 import lol.vifez.electron.profile.Profile;
 import lol.vifez.electron.util.CC;
 import net.md_5.bungee.api.chat.TextComponent;

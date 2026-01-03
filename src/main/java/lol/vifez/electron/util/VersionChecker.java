@@ -92,7 +92,7 @@ public final class VersionChecker {
     private static boolean enabled() {
         return Practice.getInstance()
                 .getConfig()
-                .getBoolean("UPDATE-CHECKER.ENABLED", true);
+                .getBoolean("SETTINGS.UPDATE-CHECKER.ENABLED", true);
     }
 
     private static boolean compare(String a, String b) {

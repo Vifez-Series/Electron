@@ -1,6 +1,6 @@
 package lol.vifez.electron.profile.menu;
 
-import lol.vifez.electron.elo.EloUtil;
+import lol.vifez.electron.game.elo.EloUtil;
 import lol.vifez.electron.profile.Profile;
 import lol.vifez.electron.util.CC;
 import lol.vifez.electron.util.ItemBuilder;

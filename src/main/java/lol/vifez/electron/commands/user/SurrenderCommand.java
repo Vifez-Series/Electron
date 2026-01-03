@@ -5,9 +5,9 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.CommandPermission;
 import lol.vifez.electron.Practice;
-import lol.vifez.electron.match.Match;
-import lol.vifez.electron.match.MatchManager;
-import lol.vifez.electron.match.enums.MatchState;
+import lol.vifez.electron.game.match.Match;
+import lol.vifez.electron.game.match.MatchManager;
+import lol.vifez.electron.game.match.enums.MatchState;
 import lol.vifez.electron.profile.Profile;
 import lol.vifez.electron.util.CC;
 import org.bukkit.entity.Player;
@@ -39,7 +39,7 @@ public class SurrenderCommand extends BaseCommand {
         }
 
         if (match.isRanked()) {
-            player.sendMessage(CC.translate("&cThis feature is disabled in ranked."));
+            player.sendMessage(CC.translate("&cYou cannot forfiet a ranked match."));
             return;
         }
 

@@ -4,24 +4,32 @@
 # ██╔══╝  ██║     ██╔══╝  ██║        ██║   ██╔══██╗██║   ██║██║╚██╗██║
 # ███████╗███████╗███████╗╚██████╗   ██║   ██║  ██║╚██████╔╝██║ ╚████║
 # ╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
-#                       Practice • v1.7.2
+#                       Practice • v1.7.3
 
 MONGO:
   URI: "mongodb://127.0.0.1:27017"
   DATABASE: "electron"
 
 SETTINGS:
-  # ↓ Spawn Cords (/setspawn works)
+  RANKED:
+    REQUIRE-WINS: true
+    UNLOCK-AMOUNT: 10
+
   SPAWN-LOCATION: "world, 0, 150, 0, 0, 0"
-  # ↓ Would you like a Join MOTD?
+
   JOIN-MESSAGE:
     ENABLED: true
     TEXT:
       - " "
-      - "&b&lElectron Practice"
-      - " &7Duels, events, ranked"
-      - " &7Multiple game modes available"
+      - "&bWelcome to Electron Practice!"
+      - " &fUse the &eSwords &fto select a kit"
+      - " &fMultiple game modes available"
+      - " "
+      - "&bUseful Commands:"
+      - "&b• &f/duel &7» &bDuel another player&f."
+      - "&b• &f/leaderboards &7» &bView global leaderboards&f."
+      - "&b• &f/settings &7» &bConfigure your settings&f."
       - " "
 
-UPDATE-CHECKER:
-  ENABLED: true
+  UPDATE-CHECKER:
+    ENABLED: true

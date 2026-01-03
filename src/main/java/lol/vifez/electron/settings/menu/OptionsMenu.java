@@ -44,7 +44,7 @@ public class OptionsMenu extends Menu {
                 new ItemBuilder(Material.EMERALD)
                         .name("&b&lLeaderboards")
                         .lore(Arrays.asList(
-                                "&7View the global leaderboards,",
+                                "&fView the global leaderboards,",
                                 " ",
                                 "&bClick to open"
                         ))
@@ -56,8 +56,8 @@ public class OptionsMenu extends Menu {
                 new ItemBuilder(Material.GOLD_INGOT)
                         .name("&b&lBank")
                         .lore(Arrays.asList(
-                                "&7View and manage your bank.",
-                                "&7balance, shop, and more.",
+                                "&fView and manage your bank.",
+                                "&fbalance, shop, and more.",
                                 " ",
                                 "&cCurrently unavailable."
                         ))
@@ -70,8 +70,8 @@ public class OptionsMenu extends Menu {
                 new ItemBuilder(Material.REDSTONE_COMPARATOR)
                         .name("&b&lConfigurations")
                         .lore(Arrays.asList(
-                                "&7Adjust your personal settings,",
-                                "&7toggle scoreboard, messages, and more.",
+                                "&fAdjust your personal settings,",
+                                "&ftoggle scoreboard, messages, and more.",
                                 " ",
                                 "&bClick to open"
                         ))
@@ -83,7 +83,7 @@ public class OptionsMenu extends Menu {
                 new ItemBuilder(Material.DIAMOND_SWORD)
                         .name("&b&lStatistics")
                         .lore(Arrays.asList(
-                                "&7View your personal statistics,",
+                                "&fView your personal statistics,",
                                 " ",
                                 "&bClick to open"
                         ))

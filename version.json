@@ -1,8 +1,8 @@
 {
-  "version": "1.7.2",
+  "version": "1.7.3",
   "changelog": [
-    "sex",
-    "sex2"
+    "Quality of life additions",
+    "Bug fixes"
   ],
   "download": "https://github.com/Vifez-Series/Electron/releases/latest"
 }

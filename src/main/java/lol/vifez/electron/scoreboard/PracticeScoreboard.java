@@ -1,13 +1,13 @@
 package lol.vifez.electron.scoreboard;
 
 import lol.vifez.electron.Practice;
-import lol.vifez.electron.queue.Queue;
+import lol.vifez.electron.game.queue.Queue;
 import lol.vifez.electron.util.assemble.AssembleAdapter;
-import lol.vifez.electron.kit.Kit;
-import lol.vifez.electron.kit.enums.KitType;
-import lol.vifez.electron.match.Match;
-import lol.vifez.electron.elo.EloUtil;
-import lol.vifez.electron.match.enums.MatchState;
+import lol.vifez.electron.game.kit.Kit;
+import lol.vifez.electron.game.kit.enums.KitType;
+import lol.vifez.electron.game.match.Match;
+import lol.vifez.electron.game.elo.EloUtil;
+import lol.vifez.electron.game.match.enums.MatchState;
 import lol.vifez.electron.profile.Profile;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

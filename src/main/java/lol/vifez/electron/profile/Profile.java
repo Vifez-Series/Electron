@@ -1,11 +1,11 @@
 package lol.vifez.electron.profile;
 
 import lol.vifez.electron.Practice;
-import lol.vifez.electron.duel.DuelRequest;
-import lol.vifez.electron.kit.Kit;
-import lol.vifez.electron.divisions.Divisions;
-import lol.vifez.electron.match.Match;
-import lol.vifez.electron.queue.Queue;
+import lol.vifez.electron.game.duel.DuelRequest;
+import lol.vifez.electron.game.kit.Kit;
+import lol.vifez.electron.game.divisions.Divisions;
+import lol.vifez.electron.game.match.Match;
+import lol.vifez.electron.game.queue.Queue;
 import lol.vifez.electron.util.CC;
 import lol.vifez.electron.util.MessageBuilder;
 import lombok.Getter;
@@ -87,6 +87,10 @@ public class Profile {
         return getMatch() != null;
     }
 
+    public boolean hasUnlockedRanked() {
+        return wins >= 10;
+    }
+
     public Match getMatch() {
         return Practice.getInstance().getMatchManager().getMatch(uuid);
     }
@@ -144,9 +148,15 @@ public class Profile {
         this.duelRequest = request;
         targetProfile.setDuelRequest(request);
 
-        CC.sendMessage(sender, "&c&lDuel sent\n&f• Opponent: &c" + target.getName() + "\n&f• Kit: &c" + kit.getName());
+        CC.sendMessage(sender, "&b&lDuel sent" +
+                "\n&f• Opponent: &b" + target.getName() +
+                "\n&f• Kit: &b" + kit.getName());
 
-        new MessageBuilder("&c&lDuel Request\n&f• Opponent: &c" + name + "\n&f• Kit: &c" + kit.getName() + "\n&a&lCLICK TO ACCEPT")
+        new MessageBuilder("&b&lDuel Request" +
+                "\n&f• From: &b" + name +
+                "\n&f• Kit: &b" + kit.getName() +
+                "\n&a&l[CLICK TO ACCEPT]")
+
                 .hover(true)
                 .clickable(true)
                 .hoverText("&bClick to accept")

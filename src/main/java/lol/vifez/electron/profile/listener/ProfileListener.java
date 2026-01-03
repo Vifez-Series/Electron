@@ -1,7 +1,7 @@
 package lol.vifez.electron.profile.listener;
 
 import lol.vifez.electron.Practice;
-import lol.vifez.electron.match.Match;
+import lol.vifez.electron.game.match.Match;
 import lol.vifez.electron.profile.Profile;
 import lol.vifez.electron.profile.ProfileManager;
 import lol.vifez.electron.profile.menu.ProfileMenu;

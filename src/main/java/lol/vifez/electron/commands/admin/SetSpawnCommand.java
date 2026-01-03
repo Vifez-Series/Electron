@@ -27,7 +27,7 @@ public class SetSpawnCommand extends BaseCommand {
         Location loc = player.getLocation();
         String serialized = SerializationUtil.serializeLocation(loc);
 
-        plugin.getConfig().set("settings.spawn-location", serialized);
+        plugin.getConfig().set("SETTINGS.SPAWN-LOCATION", serialized);
         plugin.saveConfig();
         plugin.setSpawnLocation(loc);
 
