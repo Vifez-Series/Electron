@@ -1,4 +1,4 @@
-package lol.vifez.electron.services;
+package lol.vifez.electron.listeners;
 
 import lol.vifez.electron.Practice;
 import lol.vifez.electron.profile.Profile;
@@ -24,9 +24,9 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
  * Copyright (c) 2025 Vifez. All rights reserved.
 */
 
-public class SpawnService implements Listener {
+public class SpawnListener implements Listener {
 
-    public SpawnService() {
+    public SpawnListener() {
         Practice.getInstance().getServer().getPluginManager().registerEvents(this, Practice.getInstance());
     }
 

@@ -35,7 +35,7 @@ public class ElectronCommand extends BaseCommand {
         ));
         sender.sendMessage(CC.translate(" "));
         sender.sendMessage(CC.translate("&fDiscord: &bhttps://discord.gg/ESJxCNtnyZ"));
-        sender.sendMessage(CC.translate("&fGithub: &bhttps://https://github.com/Vifez-Series/Electron"));
+        sender.sendMessage(CC.translate("&fGithub: &bhttps://github.com/Vifez-Series/Electron"));
         sender.sendMessage(CC.translate(" "));
     }
 

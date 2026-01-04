@@ -1,4 +1,4 @@
-package lol.vifez.electron.services;
+package lol.vifez.electron.listeners;
 
 import lol.vifez.electron.Practice;
 import lol.vifez.electron.profile.Profile;
@@ -15,7 +15,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
  * Copyright (c) 2025 Vifez. All rights reserved.
  */
 
-public class DeathService implements Listener {
+public class DeathListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {

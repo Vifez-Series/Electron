@@ -5,7 +5,6 @@ import lol.vifez.electron.game.arena.Arena;
 import lol.vifez.electron.game.kit.Kit;
 import lol.vifez.electron.game.match.enums.MatchState;
 import lol.vifez.electron.profile.Profile;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.GameMode;
@@ -27,29 +26,42 @@ import java.util.UUID;
  * Copyright (c) 2025 Vifez. All rights reserved.
  */
 
-@Data
+@Getter
 public class Match {
+
+    private static final int DEFAULT_COUNTDOWN_TIME = 5;
+    private static final int DEFAULT_CURRENT_COUNTDOWN = -1;
+
+    private static final float WALK_SPEED_FROZEN = 0.0F;
+    private static final float WALK_SPEED_NORMAL = 0.2F;
+    private static final float FLY_SPEED_FROZEN = 0.0F;
+    private static final float FLY_SPEED_NORMAL = 0.2F;
+
+    private static final int FOOD_FROZEN = 0;
+    private static final int FOOD_NORMAL = 20;
+
+    private static final int FREEZE_JUMP_AMPLIFIER = 200;
 
     private final UUID matchId = UUID.randomUUID();
 
     private final Practice instance;
-    private final Profile playerOne, playerTwo;
+    private final Profile playerOne;
+    private final Profile playerTwo;
     private final Kit kit;
     private final Arena arena;
     private final boolean ranked;
 
-    private Profile winner = null;
-    private MatchState matchState = MatchState.STARTING;
+    @Setter private Profile winner;
+    @Setter private MatchState matchState = MatchState.STARTING;
 
-    private int countdownTime = 5;
-    @Getter @Setter private int currentCountdown = -1;
-    @Getter @Setter private boolean countdownRunning;
-    @Getter @Setter private BukkitTask countdownTask;
+    @Setter private int countdownTime = DEFAULT_COUNTDOWN_TIME;
+    @Setter private int currentCountdown = DEFAULT_CURRENT_COUNTDOWN;
+    @Setter private boolean countdownRunning;
+    @Setter private BukkitTask countdownTask;
 
     private final Instant startTime = Instant.now();
 
     private final Map<UUID, Integer> hitsMap = new HashMap<>();
-    private boolean bedBrokenOne, bedBrokenTwo;
 
     public Match(Practice instance, Profile playerOne, Profile playerTwo, Kit kit, Arena arena, boolean ranked) {
         this.instance = instance;
@@ -73,33 +85,49 @@ public class Match {
     }
 
     public Profile getOpponent(Profile profile) {
-        return profile.getUuid().equals(playerOne.getUuid()) ? playerTwo : playerOne;
+        UUID uuid = profile.getUuid();
+        if (uuid.equals(playerOne.getUuid())) return playerTwo;
+        if (uuid.equals(playerTwo.getUuid())) return playerOne;
+
+        return null;
     }
 
     public void denyMovement(Player player) {
+        if (player == null) return;
+
         player.setHealth(player.getMaxHealth());
-        player.setWalkSpeed(0.0F);
-        player.setFlySpeed(0.0F);
-        player.setFoodLevel(0);
+        player.setWalkSpeed(WALK_SPEED_FROZEN);
+        player.setFlySpeed(FLY_SPEED_FROZEN);
+        player.setFoodLevel(FOOD_FROZEN);
         player.setSprinting(false);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 200));
+
+        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, FREEZE_JUMP_AMPLIFIER));
+
         player.setGameMode(GameMode.SURVIVAL);
     }
 
     public void allowMovement(Player player) {
+        if (player == null) return;
+
         player.removePotionEffect(PotionEffectType.JUMP);
         player.setHealth(player.getMaxHealth());
-        player.setWalkSpeed(0.2F);
-        player.setFlySpeed(0.2F);
-        player.setFoodLevel(20);
+        player.setWalkSpeed(WALK_SPEED_NORMAL);
+        player.setFlySpeed(FLY_SPEED_NORMAL);
+        player.setFoodLevel(FOOD_NORMAL);
         player.setSprinting(true);
         player.setGameMode(GameMode.SURVIVAL);
     }
 
     public void teleportAndSetup(Profile profile, boolean firstSpawn) {
+        if (profile == null) return;
+
         Player player = profile.getPlayer();
+        if (player == null) return;
+
         player.teleport(firstSpawn ? arena.getSpawnA() : arena.getSpawnB());
+
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+
         denyMovement(player);
 
         ItemStack[] contents = profile.getKitLoadout().getOrDefault(kit.getName(), kit.getContents());

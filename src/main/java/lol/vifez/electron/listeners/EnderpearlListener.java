@@ -1,4 +1,4 @@
-package lol.vifez.electron.services;
+package lol.vifez.electron.listeners;
 
 import lol.vifez.electron.Practice;
 import lol.vifez.electron.util.CC;
@@ -19,13 +19,13 @@ import java.util.UUID;
  * Copyright (c) 2025 Vifez. All rights reserved.
  */
 
-public class EnderpearlService implements Listener {
+public class EnderpearlListener implements Listener {
 
     private static final long COOLDOWN = 16_000L;
     private static final long UPDATE_INTERVAL = 2L;
     private final Map<UUID, Long> cooldowns = new HashMap<>();
 
-    public EnderpearlService() {
+    public EnderpearlListener() {
         Practice.getInstance().getServer().getPluginManager().registerEvents(this, Practice.getInstance());
     }
 

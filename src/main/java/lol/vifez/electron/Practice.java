@@ -21,9 +21,9 @@ import lol.vifez.electron.game.kit.KitManager;
 import lol.vifez.electron.game.kit.commands.KitCommands;
 import lol.vifez.electron.leaderboard.Leaderboard;
 import lol.vifez.electron.leaderboard.command.LeaderboardCommand;
-import lol.vifez.electron.services.DeathService;
-import lol.vifez.electron.services.EnderpearlService;
-import lol.vifez.electron.services.SpawnService;
+import lol.vifez.electron.listeners.DeathListener;
+import lol.vifez.electron.listeners.EnderpearlListener;
+import lol.vifez.electron.listeners.SpawnListener;
 import lol.vifez.electron.game.match.MatchListener;
 import lol.vifez.electron.game.match.MatchManager;
 import lol.vifez.electron.game.match.task.MatchTask;
@@ -179,13 +179,13 @@ public final class Practice extends JavaPlugin {
     }
 
     private void initializeListeners() {
-        Bukkit.getPluginManager().registerEvents(new DeathService(), this);
-        new SpawnService();
+        Bukkit.getPluginManager().registerEvents(new DeathListener(), this);
+        new SpawnListener();
         new MatchListener(this);
         new QueueListener(this);
         new AutoRespawn();
         new HotbarListener();
-        new EnderpearlService();
+        new EnderpearlListener();
         new MenuAPI(this);
     }
 
